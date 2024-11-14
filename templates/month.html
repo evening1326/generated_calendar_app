@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>{{ month }} {{ year }}</title>
+    <style>
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+        .calendar div {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .calendar .header {
+            font-weight: bold;
+        }
+        .event-day {
+            background-color: yellow;
+        }
+        .holiday {
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ month }} {{ year }}</h1>
+    <a href="{{ url_for('calendar_view') }}">Back to Calendar</a>
+    <div class="calendar">
+        <div class="header">Sunday</div>
+        <div class="header">Monday</div>
+        <div class="header">Tuesday</div>
+        <div class="header">Wednesday</div>
+        <div class="header">Thursday</div>
+        <div class="header">Friday</div>
+        <div class="header">Saturday</div>
+        {% set first_day_of_month = days_in_month[0].weekday() %}
+        {% set first_day_of_week = (first_day_of_month + 1) % 7 %}
+        {% for _ in range(first_day_of_week) %}
+        <div></div>
+        {% endfor %}
+        {% for day in days_in_month %}
+        {% set day_number = day.day %}
+        {% set day_name = day.strftime('%A') %}
+        <div class="{% if day_number in holidays %}holiday{% elif day_number in days_with_events %}event-day{% endif %}">
+            <strong>{{ day_number }} ({{ day_name }}):</strong>
+            {% if day_number in days_with_events %}
+            {{ days_with_events[day_number].title }} - {{ days_with_events[day_number].description }}
+            {% if days_with_events[day_number].time %}<br><strong>Time:</strong> {{ days_with_events[day_number].time }}{% endif %}
+            {% if days_with_events[day_number].location %}<br><strong>Location:</strong> {{ days_with_events[day_number].location }}{% endif %}
+            <form action="{{ url_for('delete_event', event_id=days_with_events[day_number].id) }}" method="post">
+                <button type="submit">Delete</button>
+            </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

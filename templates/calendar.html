@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Calendar</title>
+    <style>
+        .weather {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calendar</h1>
+    <div class="weather">
+        {% if weather %}
+        <h3>Weather in Flint, MI</h3>
+        <p>{{ weather.name }}</p>
+        <p>{{ weather.temperature }}°F</p>
+        <p>{{ weather.shortForecast }}</p>
+        {% else %}
+        <p>Weather information not available</p>
+        {% endif %}
+    </div>
+    <form method="POST" action="{{ url_for('search') }}">
+        <input type="text" name="query" placeholder="Search events...">
+        <button type="submit">Search</button>
+    </form>
+    <form method="POST">
+        <label for="year">Select Year:</label>
+        <input type="number" id="year" name="year" value="{{ selected_year }}">
+        <button type="submit">View</button>
+    </form>
+    <h2>Months with Events:</h2>
+    <ul>
+        {% for month in all_months %}
+        <li{% if month in events_by_month %} style="font-weight: bold;"{% endif %}>
+            <a href="{{ url_for('month_view', year=selected_year, month=month) }}">{{ month }}</a>
+            {% if month in events_by_month %}
+            <ul>
+                {% for event in events_by_month[month] %}
+                <li>
+                    <strong>{{ event.date.strftime('%Y-%m-%d') }}:</strong> {{ event.title }} - {{ event.description }}
+                    {% if event.time %}<br><strong>Time:</strong> {{ event.time }}{% endif %}
+                    {% if event.location %}<br><strong>Location:</strong> {{ event.location }}{% endif %}
+                    <form action="{{ url_for('delete_event', event_id=event.id) }}" method="post">
+                        <input type="hidden" name="year" value="{{ selected_year }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                    {% if event.description != "US Holiday" %}
+                    <a href="{{ url_for('edit_event', event_id=event.id) }}">Edit</a> <!-- New Edit button -->
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('add_event') }}?year={{ selected_year }}">Add New Event</a>
+</body>
+</html>

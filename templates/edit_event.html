@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Edit Event</title>
+</head>
+<body>
+    <h1>Edit Event</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.title.label }} {{ form.title(size=20) }}
+        </div>
+        <div>
+            {{ form.date.label }} {{ form.date() }}
+        </div>
+        <div>
+            {{ form.description.label }} {{ form.description(rows=3) }}
+        </div>
+        <div>
+            {{ form.time.label }} {{ form.time(size=10) }}
+        </div>
+        <div>
+            {{ form.location.label }} {{ form.location(size=20) }}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+</body>
+</html>
