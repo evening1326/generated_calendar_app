@@ -110,7 +110,12 @@ def calendar_view():
 def month_view(year, month):
     month_number = datetime.strptime(month, '%B').month
     events = Event.query.filter(db.extract('year', Event.date) == year, db.extract('month', Event.date) == month_number).order_by(Event.date).all()
-    days_with_events = {event.date.day: event for event in events}
+    days_with_events = {}
+    for event in events:
+        day = event.date.day
+        if day not in days_with_events:
+            days_with_events[day] = []
+        days_with_events[day].append(event)
     holidays = {event.date.day: event for event in events if event.description == "US Holiday"}
     _, num_days = calendar.monthrange(year, month_number)
     days_in_month = [datetime(year, month_number, day) for day in range(1, num_days + 1)]
@@ -124,7 +129,9 @@ def add_event():
         event = Event(
             date=form.date.data,
             title=form.title.data,
-            description=form.description.data
+            description=form.description.data,
+            time=form.time.data,  # Include time field
+            location=form.location.data  # Include location field
         )
         db.session.add(event)
         db.session.commit()
@@ -153,11 +160,15 @@ def edit_event(event_id):
 @app.route('/delete/<int:event_id>', methods=['POST'])
 def delete_event(event_id):
     event = Event.query.get_or_404(event_id)
+    if event.description == "US Holiday":
+        flash("Holidays cannot be deleted.")
+        return redirect(url_for('calendar_view') + f"?year={event.date.year}")
     selected_year = request.form.get('year', event.date.year)
+    selected_month = event.date.strftime('%B')
     db.session.delete(event)
     db.session.commit()
     flash("Event removed successfully!")
-    return redirect(url_for('calendar_view') + f"?year={selected_year}")
+    return redirect(url_for('month_view', year=selected_year, month=selected_month))
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():

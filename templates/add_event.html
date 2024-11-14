@@ -10,16 +10,27 @@
         {{ form.hidden_tag() }}
         <input type="hidden" name="year" value="{{ selected_year }}">
         <div>
-            {{ form.title.label }} {{ form.title(size=20) }}
+            {{ form.title.label }}<br>
+            {{ form.title(size=64) }}
         </div>
         <div>
-            {{ form.date.label }} {{ form.date() }}
+            {{ form.date.label }}<br>
+            {{ form.date(size=32) }}
         </div>
         <div>
-            {{ form.description.label }} {{ form.description(rows=3) }}
+            {{ form.description.label }}<br>
+            {{ form.description(size=128) }}
         </div>
         <div>
-            {{ form.submit() }}
+            {{ form.time.label }}<br>
+            {{ form.time(size=10) }}  <!-- Add time field -->
+        </div>
+        <div>
+            {{ form.location.label }}<br>
+            {{ form.location(size=64) }}  <!-- Add location field -->
+        </div>
+        <div>
+            <button type="submit">Add Event</button>
         </div>
     </form>
 </body>

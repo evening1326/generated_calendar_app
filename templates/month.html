@@ -47,12 +47,20 @@
         <div class="{% if day_number in holidays %}holiday{% elif day_number in days_with_events %}event-day{% endif %}">
             <strong>{{ day_number }} ({{ day_name }}):</strong>
             {% if day_number in days_with_events %}
-            {{ days_with_events[day_number].title }} - {{ days_with_events[day_number].description }}
-            {% if days_with_events[day_number].time %}<br><strong>Time:</strong> {{ days_with_events[day_number].time }}{% endif %}
-            {% if days_with_events[day_number].location %}<br><strong>Location:</strong> {{ days_with_events[day_number].location }}{% endif %}
-            <form action="{{ url_for('delete_event', event_id=days_with_events[day_number].id) }}" method="post">
-                <button type="submit">Delete</button>
-            </form>
+                {% for event in days_with_events[day_number] %}
+                    {{ event.title }} - {{ event.description }}
+                    {% if event.time %}<br><strong>Time:</strong> {{ event.time }}{% endif %}
+                    {% if event.location %}<br><strong>Location:</strong> {{ event.location }}{% endif %}
+                    {% if event.description != "US Holiday" %}
+                    <form action="{{ url_for('delete_event', event_id=event.id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                    <form action="{{ url_for('edit_event', event_id=event.id) }}" method="get" style="display:inline;">
+                        <button type="submit" class="btn btn-primary btn-sm">Edit</button>
+                    </form>
+                    {% endif %}
+                    <br>
+                {% endfor %}
             {% endif %}
         </div>
         {% endfor %}
