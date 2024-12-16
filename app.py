@@ -103,10 +103,15 @@ def get_weather():
 def execute_sqlite_command(command):
     try:
         # Handle INSERT INTO command
-        insert_pattern = re.compile(r"INSERT INTO event \(date, title, description, time, location\) VALUES \('([^']*)', '([^']*)', '([^']*)', '([^']*)', '([^']*)'\);", re.IGNORECASE)
+        insert_pattern = re.compile(r"INSERT INTO event \(date, title, description, time, location\) VALUES \((.*)\);", re.IGNORECASE)
         insert_match = insert_pattern.search(command)
         if insert_match:
-            date_str, title, description, time, location = insert_match.groups()
+            values = insert_match.group(1)
+            values = re.split(r",\s*(?=(?:[^']*'[^']*')*[^']*$)", values)  # Split by comma outside of quotes
+            date_str, title, description, time, location = [v.strip().strip("'") for v in values]
+            title = title.replace("''", "'")
+            description = description.replace("''", "'")
+            location = location.replace("''", "'")
             date = datetime.strptime(date_str, '%Y-%m-%d').date()
             event = Event(date=date, title=title, description=description, time=time, location=location)
             db.session.add(event)
@@ -187,6 +192,7 @@ def get_chatgpt_response(prompt):
                                             The INSERT INTO command should be in the format: INSERT INTO event (date, title, description, time, location) VALUES ('2024-01-20', 'dad bday', '', '', '');
                                             When modifying/updating an event, please use the format: UPDATE event SET date = '2024-01-09' WHERE title = 'qwerty day';
                                             When deleting an event, please use DELETE FROM rather than UPDATE.
+                                            Please make sure that rather than using \' for escaping single quotes, instead use two single quotes ''.
                                             Please make sure the command is all one line.
                                             '''},
             {"role": "user", "content": f"Here are some recent events: {events_data}. {prompt}"}

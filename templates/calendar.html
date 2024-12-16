@@ -80,9 +80,9 @@
             <ul>
                 {% for event in events_by_month[month] %}
                 <li>
-                    <strong>{{ event.date.strftime('%Y-%m-%d') }}:</strong> {{ event.title }} - {{ event.description }}
+                    <strong>{{ event.date.strftime('%Y-%m-%d') }}:</strong> {{ event.title.replace("''", "'") }} - {{ event.description.replace("''", "'") }}
                     {% if event.time %}<br><strong>Time:</strong> {{ event.time }}{% endif %}
-                    {% if event.location %}<br><strong>Location:</strong> {{ event.location }}{% endif %}
+                    {% if event.location %}<br><strong>Location:</strong> {{ event.location.replace("''", "'") }}{% endif %}
                     {% if event.description != "US Holiday" %}
                     <form action="{{ url_for('delete_event', event_id=event.id) }}" method="post" style="display:inline;">
                         <input type="hidden" name="year" value="{{ selected_year }}">
