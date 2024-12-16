@@ -6,31 +6,31 @@
 </head>
 <body>
     <h1>Add Event</h1>
-    <form method="POST">
+    <form method="POST" action="{{ url_for('add_event') }}">
         {{ form.hidden_tag() }}
         <input type="hidden" name="year" value="{{ selected_year }}">
-        <div>
+        <div class="form-group">
             {{ form.title.label }}<br>
-            {{ form.title(size=64) }}
+            {{ form.title(size=40) }}
         </div>
-        <div>
+        <div class="form-group">
             {{ form.date.label }}<br>
-            {{ form.date(size=32) }}
+            {{ form.date() }}
         </div>
-        <div>
+        <div class="form-group">
             {{ form.description.label }}<br>
-            {{ form.description(size=128) }}
+            {{ form.description(rows=4, cols=40) }}
         </div>
-        <div>
+        <div class="form-group">
             {{ form.time.label }}<br>
             {{ form.time(size=10) }}  <!-- Add time field -->
         </div>
-        <div>
+        <div class="form-group">
             {{ form.location.label }}<br>
-            {{ form.location(size=64) }}  <!-- Add location field -->
+            {{ form.location(size=40) }}  <!-- Add location field -->
         </div>
-        <div>
-            <button type="submit">Add Event</button>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
         </div>
     </form>
 </body>

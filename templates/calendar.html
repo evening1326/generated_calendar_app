@@ -12,9 +12,30 @@
             padding: 10px;
             border: 1px solid #ccc;
         }
+        .clock {
+            position: absolute;
+            top: 150px;
+            right: 10px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
     </style>
+    <script>
+        function updateClock() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
+            if (minutes < 10) minutes = '0' + minutes;
+            if (seconds < 10) seconds = '0' + seconds;
+            var timeString = hours + ':' + minutes + ':' + seconds;
+            document.getElementById('clock').innerHTML = timeString;
+        }
+        setInterval(updateClock, 1000);
+    </script>
 </head>
-<body>
+<body onload="updateClock()">
     <h1>Calendar</h1>
     <div class="weather">
         {% if weather %}
@@ -26,15 +47,30 @@
         <p>Weather information not available</p>
         {% endif %}
     </div>
+    <div class="clock">
+        <h3>Current Time (EST)</h3>
+        <p id="clock"></p>
+    </div>
     <form method="POST" action="{{ url_for('search') }}">
         <input type="text" name="query" placeholder="Search events...">
         <button type="submit">Search</button>
     </form>
-    <form method="POST">
+    <form method="POST" action="{{ url_for('calendar_view', year=selected_year) }}">
         <label for="year">Select Year:</label>
         <input type="number" id="year" name="year" value="{{ selected_year }}">
         <button type="submit">View</button>
     </form>
+    <form method="POST" action="{{ url_for('calendar_view', year=selected_year) }}">
+        {{ chat_form.hidden_tag() }}
+        <div class="form-group">
+            <label for="prompt" title="Simply describe what you wish to add/remove/modify and click 'Send' to have the action performed for you!">Smart Action</label><br>
+            {{ chat_form.prompt(size=40) }}
+        </div>
+        <div class="form-group">
+            {{ chat_form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+
     <h2>Months with Events:</h2>
     <ul>
         {% for month in all_months %}

@@ -27,7 +27,7 @@
 </head>
 <body>
     <h1>{{ month }} {{ year }}</h1>
-    <a href="{{ url_for('calendar_view') }}">Back to Calendar</a>
+    <a href="{{ url_for('calendar_view', year=selected_year) }}">Back to Calendar</a>
     <div class="calendar">
         <div class="header">Sunday</div>
         <div class="header">Monday</div>
